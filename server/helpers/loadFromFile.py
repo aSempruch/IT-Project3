@@ -3,6 +3,8 @@ def loadFromFile(dnsFile):
 
     for line in dnsFile:
         split = line.strip().split()
+        if len(split) < 3:
+            continue
         if split[2] == 'NS':
             records['NS'] = split[0]
         else:

@@ -2,9 +2,6 @@ import socket
 from helpers.customPrint import ts_print as xprint
 from helpers.loadFromFile import loadFromFile
 
-PORT = 60030
-DNS_FILE = '../PROJI-DNSTS.txt'
-
 dnsRecords = {}
 
 def lookupHostname(query):
@@ -18,9 +15,9 @@ def lookupHostname(query):
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
     # Hostname not in DNS records
-    return 'Hostname - Error:HOST NOT FOUND'
+    return hostname + ' - Error:HOST NOT FOUND'
 
-def startServer():
+def startServer(PORT):
     try:
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         xprint("Socket Created")
@@ -57,23 +54,21 @@ def runService(connection):
         xprint("No more data, closing connection")
         pass
 
-def loadFile():
+def loadFile(DNS_FILE):
     # Read file into data structure
     with open(DNS_FILE, "r") as dnsFile:
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
         xprint("Loaded " + DNS_FILE)
 
-def main():
+def main(port, dnsFile):
 
-    loadFile()
+    loadFile(dnsFile)
 
-    connection = startServer()
+    connection = startServer(port)
 
     # Accept multiple connections
     while True:
         runService(connection)
 
     connection.close()
-
-main()
