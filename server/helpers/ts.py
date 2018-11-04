@@ -4,6 +4,7 @@ from helpers.loadFromFile import loadFromFile
 
 dnsRecords = {}
 
+# Performs local hs lookup
 def lookupHostname(query):
 
     hostname = query.strip()
@@ -17,6 +18,7 @@ def lookupHostname(query):
     # Hostname not in DNS records
     return hostname + ' - Error:HOST NOT FOUND'
 
+# Starts server
 def startServer(PORT):
     try:
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,6 +38,7 @@ def startServer(PORT):
 
     return connection
 
+# Service that listens for client requests
 def runService(connection):
     csockid, addr = connection.accept()
     xprint("Got connection request from", str(addr))
@@ -54,6 +57,7 @@ def runService(connection):
         xprint("No more data, closing connection")
         pass
 
+# Loads DNS records from file
 def loadFile(DNS_FILE):
     # Read file into data structure
     with open(DNS_FILE, "r") as dnsFile:
