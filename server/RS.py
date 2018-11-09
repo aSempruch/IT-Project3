@@ -14,6 +14,7 @@ TS2socket = None
 
 dnsRecords = {}
 
+
 # Establishes connection to both TS servers
 def connectToTS(ts1_HN, ts2_HN):
     sa_sameas_myaddr = socket.gethostbyname(socket.gethostname())
@@ -30,10 +31,12 @@ def connectToTS(ts1_HN, ts2_HN):
     TS1socket.connect((ts1_HN, TS1Port))
     TS2socket.connect((ts2_HN, TS2Port))
 
+
 # Performs a DNS lookup on external connection
 def lookupExternal(query, connection):
     connection.send(query.encode("utf-8"))
     return connection.recv(100).decode('utf-8')
+
 
 # Performs local lookup
 # If not found, performs external lookup based on domain postfix
@@ -58,6 +61,7 @@ def lookupHostname(query):
     # Hostname not in DNS records
     return hostname + ' - Error:HOST NOT FOUND'
 
+
 # Starts server
 def startServer():
     try:
@@ -77,6 +81,7 @@ def startServer():
     xprint("IP:", localhost_ip)
 
     return connection
+
 
 # Service that listens for client requests
 def runService(connection, ts1_HN, ts2_HN):
@@ -99,6 +104,7 @@ def runService(connection, ts1_HN, ts2_HN):
         xprint("No more data, closing connection")
         pass
 
+
 # Loads file into local DNS data structure
 def loadFile(dns_FILE):
     # Read file into data structure
@@ -106,6 +112,7 @@ def loadFile(dns_FILE):
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
         xprint("Loaded " + dns_FILE)
+
 
 def main(dns_FILE, ts1_HN, ts2_HN):
 
@@ -116,5 +123,6 @@ def main(dns_FILE, ts1_HN, ts2_HN):
     runService(connection, ts1_HN, ts2_HN)
 
     connection.close()
+
 
 main(sys.argv[3], sys.argv[1], sys.argv[2])

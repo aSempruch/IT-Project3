@@ -3,8 +3,8 @@ import socket, sys
 RS_PORT = 60020
 TS_PORT = 60030
 
-def rs_connect(hostName):
 
+def rs_connect(hostName):
     try:
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("Created client socket")
@@ -20,6 +20,7 @@ def lookup(line, connection):
     connection.send(line.encode("utf-8"))
     return connection.recv(100).decode('utf-8')
 
+
 def main(hostName, fileName):
     rs_connection = rs_connect(hostName)
 
@@ -31,7 +32,6 @@ def main(hostName, fileName):
             resolvedFile.write(response + '\n')
 
     rs_connection.close()
-
 
 
 main(sys.argv[1], sys.argv[2])
