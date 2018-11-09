@@ -1,10 +1,9 @@
-import socket
+import socket, sys
 
 RS_PORT = 60020
 TS_PORT = 60030
 
-def rs_connect():
-    sa_sameas_myaddr = socket.gethostbyname(socket.gethostname())
+def rs_connect(hostName):
 
     try:
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,7 +11,7 @@ def rs_connect():
     except socket.error as err:
         print("Unable to create socket", err)
 
-    connection.connect((sa_sameas_myaddr, RS_PORT))
+    connection.connect((hostName, RS_PORT))
 
     return connection
 
@@ -21,10 +20,10 @@ def lookup(line, connection):
     connection.send(line.encode("utf-8"))
     return connection.recv(100).decode('utf-8')
 
-def main():
-    rs_connection = rs_connect()
+def main(hostName, fileName):
+    rs_connection = rs_connect(hostName)
 
-    with open('../PROJ2-HNS.txt') as hostsFile, open('../RESOLVED.txt', 'w+') as resolvedFile:
+    with open(fileName) as hostsFile, open('RESOLVED.txt', 'w+') as resolvedFile:
         for line in hostsFile:
             line = line.strip()
             response = lookup(line, rs_connection)
@@ -35,4 +34,4 @@ def main():
 
 
 
-main()
+main(sys.argv[1], sys.argv[2])

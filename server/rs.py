@@ -1,10 +1,10 @@
 import socket
+import sys
+
 from helpers.customPrint import rs_print as xprint
 from helpers.loadFromFile import loadFromFile
 
 PORT = 60020
-DNS_FILE = '../PROJ2-DNSRS.txt'
-DNS_COM = 'localhost:'
 
 TS1Port = 6030
 TS2Port = 6031
@@ -15,7 +15,7 @@ TS2socket = None
 dnsRecords = {}
 
 # Establishes connection to both TS servers
-def connectToTS():
+def connectToTS(ts1_HN, ts2_HN):
     sa_sameas_myaddr = socket.gethostbyname(socket.gethostname())
 
     global TS1socket, TS2socket
@@ -27,8 +27,8 @@ def connectToTS():
     except socket.error as err:
         xprint("Unable to create TS sockets", err)
 
-    TS1socket.connect((sa_sameas_myaddr, TS1Port))
-    TS2socket.connect((sa_sameas_myaddr, TS2Port))
+    TS1socket.connect((ts1_HN, TS1Port))
+    TS2socket.connect((ts2_HN, TS2Port))
 
 # Performs a DNS lookup on external connection
 def lookupExternal(query, connection):
@@ -49,10 +49,10 @@ def lookupHostname(query):
     domaintype = hostname.split('.')[-1]
 
     if domaintype == 'com':
-        xprint("Performing com TS server lookup for", hostname)
+        xprint("\tPerforming com TS server lookup for", hostname)
         return lookupExternal(hostname, TS1socket)
     if domaintype == 'edu':
-        xprint("Performing edu TS server lookup for", hostname)
+        xprint("\tPerforming edu TS server lookup for", hostname)
         return lookupExternal(hostname, TS2socket)
 
     # Hostname not in DNS records
@@ -79,9 +79,9 @@ def startServer():
     return connection
 
 # Service that listens for client requests
-def runService(connection):
+def runService(connection, ts1_HN, ts2_HN):
 
-    connectToTS()
+    connectToTS(ts1_HN, ts2_HN)
 
     csockid, addr = connection.accept()
     xprint("Got connection request from", str(addr))
@@ -93,30 +93,28 @@ def runService(connection):
                 continue
             xprint("Lookup from client:", query)
             resolved = lookupHostname(query)
-            xprint("Replying with", resolved)
+            xprint("\tReplying with", resolved)
             csockid.send(resolved.encode('utf-8'))
     except socket.error:
         xprint("No more data, closing connection")
         pass
 
 # Loads file into local DNS data structure
-def loadFile():
+def loadFile(dns_FILE):
     # Read file into data structure
-    with open(DNS_FILE, "r") as dnsFile:
+    with open(dns_FILE, "r") as dnsFile:
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
-        xprint("Loaded " + DNS_FILE)
+        xprint("Loaded " + dns_FILE)
 
-def main():
+def main(dns_FILE, ts1_HN, ts2_HN):
 
-    loadFile()
+    loadFile(dns_FILE)
 
     connection = startServer()
 
-    # Accept multiple connections
-    while True:
-        runService(connection)
+    runService(connection, ts1_HN, ts2_HN)
 
     connection.close()
 
-main()
+main(sys.argv[3], sys.argv[1], sys.argv[2])
