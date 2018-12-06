@@ -1,8 +1,9 @@
-import socket
+import socket, hmac, threading
 from helpers.customPrint import ts_print as xprint
 from helpers.loadFromFile import loadFromFile
 
 dnsRecords = {}
+key = None
 
 
 # Performs local hs lookup
@@ -42,8 +43,8 @@ def startServer(PORT):
 
 
 # Service that listens for client requests
-def runService(connection):
-    csockid, addr = connection.accept()
+def runService(csockid, addr):
+
     xprint("Got connection request from", str(addr))
 
     try:
@@ -51,14 +52,15 @@ def runService(connection):
             query = csockid.recv(100).decode('utf-8')
             if len(query) < 1:
                 continue
-
             params = query.strip().split('^^')
+
             if params[0] == 'auth':
-                csockid.send('TS response'.encode('utf-8'))
+                digest = hmac.new(key.encode(), params[1].encode("utf-8"))
+                csockid.send(digest.hexdigest().encode('utf-8'))
                 continue
 
-            xprint("Lookup from client:", query)
-            response = lookupHostname(query)
+            xprint("Lookup from client:", params[1])
+            response = lookupHostname(params[1])
             xprint("Sending to client: " + response)
             csockid.send(response.encode('utf-8'))
     except:
@@ -66,8 +68,13 @@ def runService(connection):
         pass
 
 
-# Loads DNS records from file
-def loadFile(DNS_FILE):
+# Loads DNS records and key from file
+def loadFile(DNS_FILE, KEY_FILE):
+    #Read Key
+    with open(KEY_FILE, "r") as keyFile:
+        global key
+        key = keyFile.readline().strip()
+
     # Read file into data structure
     with open(DNS_FILE, "r") as dnsFile:
         global dnsRecords
@@ -75,12 +82,14 @@ def loadFile(DNS_FILE):
         xprint("Loaded " + DNS_FILE)
 
 
-def main(port, dnsFile):
+def main(port, dnsFile, keyFile):
 
-    loadFile(dnsFile)
+    loadFile(dnsFile, keyFile)
 
     connection = startServer(port)
 
-    runService(connection)
+    while True:
+        csockid, addr = connection.accept()
+        threading.Thread(target=runService(csockid, addr))
 
     connection.close()

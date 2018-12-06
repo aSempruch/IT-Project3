@@ -72,7 +72,14 @@ def handleAuth(params, csockid):
     TS2socket.send(('auth^^' + params[1]).encode('utf-8'))
     ts2res = TS2socket.recv(100).decode('utf-8')
 
-    print(ts1res, ts2res)
+    if ts1res == params[2]:
+        response = 'TLDS1'
+    elif ts2res == params[2]:
+        response = 'TLDS2'
+    else:
+        response = 'NO_DIGEST_MATCH'
+
+    csockid.send(response.encode('utf-8'))
 
 # Starts server
 def startServer():
@@ -98,7 +105,6 @@ def startServer():
 # Service that listens for client requests
 def runService(connection, ts1_HN, ts2_HN):
 
-    # TODO: Uncomment
     connectToTS(ts1_HN, ts2_HN)
 
     csockid, addr = connection.accept()

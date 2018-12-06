@@ -2,4 +2,4 @@ import sys
 
 from helpers.ts import main as ts2
 
-ts2(6031, 'PROJ3-TLDS2.txt')
+ts2(6031, 'PROJ3-TLDS2.txt', 'PROJ3-KEY2.txt')
