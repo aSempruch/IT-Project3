@@ -48,7 +48,6 @@ def authenticate(key, challenge, connection):
     digest = hmac.new(key.encode(), challenge.encode("utf-8"))
     connection.send(('auth^^' + challenge + '^^' + digest.hexdigest()).encode('utf-8'))
     response = connection.recv(100).decode('utf-8')
-    print(key, response)
     return response
 
 def main(hostName, fileName):
@@ -62,7 +61,7 @@ def main(hostName, fileName):
             challenge = split[1]
             domainName = split[2]
             authresponse = authenticate(key, challenge, rs_connection)
-            print("HERE")
+            print('Auth Server responded with server:', authresponse, 'for challenge', challenge, 'and key', key)
             if authresponse == 'TLDS1':
                 tsServer = TS1socket
             elif authresponse == 'TLDS2':
@@ -73,8 +72,8 @@ def main(hostName, fileName):
 
             resolved = lookup(split[2], tsServer)
             print(resolved)
-            #print("RS Lookup for " + line + ": " + response)
-            #resolvedFile.write(response + '\n')
+            print("Lookup for " + line + ": " + resolved)
+            resolvedFile.write(authresponse + ' ' + resolved + '\n')
             #print(line)
 
     rs_connection.close()

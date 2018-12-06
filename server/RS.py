@@ -64,8 +64,6 @@ def lookupHostname(query):
 
 def handleAuth(params, csockid):
 
-    print(params)
-
     TS1socket.send(('auth^^' + params[1]).encode('utf-8'))
     ts1res = TS1socket.recv(100).decode('utf-8')
 
@@ -78,6 +76,8 @@ def handleAuth(params, csockid):
         response = 'TLDS2'
     else:
         response = 'NO_DIGEST_MATCH'
+
+    xprint('Auth request for challenge ' + params[1] + ':' + response)
 
     csockid.send(response.encode('utf-8'))
 

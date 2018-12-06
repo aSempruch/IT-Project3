@@ -1,4 +1,5 @@
 import socket, hmac, threading
+from _thread import *
 from helpers.customPrint import ts_print as xprint
 from helpers.loadFromFile import loadFromFile
 
@@ -11,9 +12,9 @@ def lookupHostname(query):
 
     hostname = query.strip()
 
+    xprint("Looking up", hostname)
     # Hostname is in DNS records
     if hostname in dnsRecords:
-        xprint("Looking up", hostname)
         entry = dnsRecords[hostname]
         return hostname + " " + entry["ip"] + " " + entry["flag"]
 
@@ -80,6 +81,7 @@ def loadFile(DNS_FILE, KEY_FILE):
         global dnsRecords
         dnsRecords = loadFromFile(dnsFile)
         xprint("Loaded " + DNS_FILE)
+        print(dnsRecords)
 
 
 def main(port, dnsFile, keyFile):
@@ -90,6 +92,6 @@ def main(port, dnsFile, keyFile):
 
     while True:
         csockid, addr = connection.accept()
-        threading.Thread(target=runService(csockid, addr))
+        threading.Thread(target=runService, args=[csockid, addr]).start()
 
     connection.close()
