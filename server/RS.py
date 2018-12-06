@@ -62,6 +62,18 @@ def lookupHostname(query):
     return hostname + ' - Error:HOST NOT FOUND'
 
 
+def handleAuth(params, csockid):
+
+    print(params)
+
+    TS1socket.send(('auth^^' + params[1]).encode('utf-8'))
+    ts1res = TS1socket.recv(100).decode('utf-8')
+
+    TS2socket.send(('auth^^' + params[1]).encode('utf-8'))
+    ts2res = TS2socket.recv(100).decode('utf-8')
+
+    print(ts1res, ts2res)
+
 # Starts server
 def startServer():
     try:
@@ -86,6 +98,7 @@ def startServer():
 # Service that listens for client requests
 def runService(connection, ts1_HN, ts2_HN):
 
+    # TODO: Uncomment
     connectToTS(ts1_HN, ts2_HN)
 
     csockid, addr = connection.accept()
@@ -96,10 +109,15 @@ def runService(connection, ts1_HN, ts2_HN):
             query = csockid.recv(100).decode('utf-8')
             if len(query) < 1:
                 continue
-            xprint("Lookup from client:", query)
-            resolved = lookupHostname(query)
-            xprint("\tReplying with", resolved)
-            csockid.send(resolved.encode('utf-8'))
+            #xprint("Message from client:", query)
+
+            params = query.strip().split('^^')
+            if params[0] == 'auth':
+                handleAuth(params, csockid)
+
+            #resolved = lookupHostname(query)
+            #xprint("\tReplying with", resolved)
+            #csockid.send(resolved.encode('utf-8'))
     except socket.error:
         xprint("No more data, closing connection")
         pass
@@ -114,9 +132,7 @@ def loadFile(dns_FILE):
         xprint("Loaded " + dns_FILE)
 
 
-def main(dns_FILE, ts1_HN, ts2_HN):
-
-    loadFile(dns_FILE)
+def main(ts1_HN, ts2_HN):
 
     connection = startServer()
 
@@ -125,4 +141,4 @@ def main(dns_FILE, ts1_HN, ts2_HN):
     connection.close()
 
 
-main(sys.argv[3], sys.argv[1], sys.argv[2])
+main('localhost', 'localhost')

@@ -1,4 +1,4 @@
-import socket, sys
+import socket, sys, hmac
 
 RS_PORT = 60020
 TS_PORT = 60030
@@ -20,18 +20,26 @@ def lookup(line, connection):
     connection.send(line.encode("utf-8"))
     return connection.recv(100).decode('utf-8')
 
+def authenticate(key, challenge, connection):
+    digest = hmac.new(key.encode(), challenge.encode("utf-8"))
+    connection.send(('auth^^' + challenge + '^^' + digest.hexdigest()).encode('utf-8'))
+
 
 def main(hostName, fileName):
     rs_connection = rs_connect(hostName)
 
     with open(fileName) as hostsFile, open('RESOLVED.txt', 'w+') as resolvedFile:
         for line in hostsFile:
-            line = line.strip()
-            response = lookup(line, rs_connection)
-            print("RS Lookup for " + line + ": " + response)
-            resolvedFile.write(response + '\n')
+            split = line.strip().split(' ')
+            key = split[0]
+            challenge = split[1]
+            domainName = split[2]
+            authresponse = authenticate(key, challenge, rs_connection)
+            #print("RS Lookup for " + line + ": " + response)
+            #resolvedFile.write(response + '\n')
+            #print(line)
 
     rs_connection.close()
 
 
-main(sys.argv[1], sys.argv[2])
+main('localhost', 'PROJ3-HNS.txt')

@@ -52,6 +52,11 @@ def runService(connection):
             if len(query) < 1:
                 continue
 
+            params = query.strip().split('^^')
+            if params[0] == 'auth':
+                csockid.send('TS response'.encode('utf-8'))
+                continue
+
             xprint("Lookup from client:", query)
             response = lookupHostname(query)
             xprint("Sending to client: " + response)
