@@ -7,6 +7,9 @@ Group
 ---
 Project was tested with Python 3.7
 
+PROJ3*.txt files are included in submission to demonstrate where they should
+be located for proper execution.
+
 Python files are distributed among directories to allow for importing custom modules and reuse of code
 
 TLDS1 and TLDS2 are simply importing the same ts.py module 

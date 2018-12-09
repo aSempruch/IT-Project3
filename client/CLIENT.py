@@ -52,7 +52,7 @@ def authenticate(key, challenge, connection):
 
 def main(hostName, fileName):
     rs_connection = rs_connect(hostName)
-    connectToTS('localhost', 'localhost')
+    connectToTS('cpp.cs.rutgers.edu', 'java.cs.rutgers.edu')
 
     with open(fileName) as hostsFile, open('RESOLVED.txt', 'w+') as resolvedFile:
         for line in hostsFile:
