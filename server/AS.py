@@ -147,4 +147,4 @@ def main(ts1_HN, ts2_HN):
     connection.close()
 
 
-main('localhost', 'localhost')
+main('cpp.cs.rutgers.edu', 'java.cs.rutgers.edu')

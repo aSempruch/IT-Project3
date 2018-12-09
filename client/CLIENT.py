@@ -71,7 +71,6 @@ def main(hostName, fileName):
                 continue
 
             resolved = lookup(split[2], tsServer)
-            print(resolved)
             print("Lookup for " + line + ": " + resolved)
             resolvedFile.write(authresponse + ' ' + resolved + '\n')
             #print(line)

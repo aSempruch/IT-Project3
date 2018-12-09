@@ -1,23 +1,27 @@
-DNS Project - Phase 2
+DNS Project - Phase 3
 ---
-
+Group
+---
+ - Alan Sempruch (as2322)
+ - Sarah Khasawneh (sk1683)
+---
 Project was tested with Python 3.7
 
 Python files are distributed among directories to allow for importing custom modules and reuse of code
 
-TSCOM.py and TSEDU.py are simply importing the same ts.py module 
+TLDS1 and TLDS2 are simply importing the same ts.py module 
 and executing it with different parameters
 
 Execution from project root
 ---
-TSCOM server:
-`python server/TSCOM.py PROJ2-DNSCOM.txt`
+TLDS1 server:
+`python server/TLDS1.py`
 
-TSEDU server:
-`python server/TSEDU.py PROJ2-DNSEDU.txt`
+TLDS2 server:
+`python server/TLDS2.py`
 
-RS server:
-`python server/RS.py <TSCOM-hostname> <TSEDU-hostname> PROJ2-DNSRS.txt`
+AS server:
+`python server/AS.py`
 
 Client:
-`python client/CLIENT.py <RS-hostname> PROJ2-HNS.txt`
+`python client/CLIENT.py`
